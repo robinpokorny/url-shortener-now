@@ -1,10 +1,8 @@
 import { NowRequest, NowResponse } from "@now/node";
-import { Client, query } from "faunadb";
+import { query } from "faunadb";
+import { client } from "../lib/db";
 
 const { Get, Match, Index, Update } = query;
-
-const secret = process.env.FAUNADB_SECRET_KEY as string;
-const client = new Client({ secret });
 
 export default async (req: NowRequest, res: NowResponse) => {
   const { query } = req;
