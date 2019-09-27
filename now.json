@@ -1,4 +1,8 @@
 {
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(?<key>[^/]+)", "dest": "/api/redirect.ts?key=$key" }
+  ],
   "env": {
     "FAUNADB_SECRET_KEY": "@faunadb_secret_key"
   }
