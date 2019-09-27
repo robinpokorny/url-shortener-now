@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from "@now/node";
 import { Client, query } from "faunadb";
 
-const { Get, Match, Index } = query;
+const { Get, Match, Index, Update } = query;
 
 const secret = process.env.FAUNADB_SECRET_KEY as string;
 const client = new Client({ secret });
@@ -19,14 +19,16 @@ export default async (req: NowRequest, res: NowResponse) => {
   }
 
   try {
-    const { data } = (await client.query(
+    const { data, ref } = (await client.query(
       Get(Match(Index("ref_by_key"), key))
     )) as any;
 
-    const { url } = data;
+    const { url, counter } = data;
 
     res.writeHead(301, { Location: url });
     res.end();
+
+    await client.query(Update(ref, { data: { counter: counter + 1 } }));
   } catch (error) {
     if (error.name === "NotFound") {
       res
