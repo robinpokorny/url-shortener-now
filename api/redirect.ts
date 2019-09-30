@@ -1,14 +1,11 @@
 import { NowRequest, NowResponse } from "@now/node";
-import { query } from "faunadb";
-import { client } from "../lib/db";
-
-const { Get, Match, Index, Update } = query;
+import { getLink, incrementLinkCount } from "../lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
   const { query } = req;
   const { key } = query;
 
-  if (!key) {
+  if (!key || Array.isArray(key)) {
     res
       .status(400)
       .json({ message: "Bad Request: provide a key to translate" });
@@ -17,16 +14,14 @@ export default async (req: NowRequest, res: NowResponse) => {
   }
 
   try {
-    const { data, ref } = (await client.query(
-      Get(Match(Index("ref_by_key"), key))
-    )) as any;
+    const { data, ref } = await getLink(key);
 
     const { url, counter } = data;
 
     res.writeHead(301, { Location: url });
     res.end();
 
-    await client.query(Update(ref, { data: { counter: counter + 1 } }));
+    await incrementLinkCount(ref, counter);
   } catch (error) {
     if (error.name === "NotFound") {
       res
