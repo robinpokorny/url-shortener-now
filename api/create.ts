@@ -1,13 +1,20 @@
 import { NowRequest, NowResponse } from "@now/node";
+import auth from "../lib/auth";
+import { createLink } from "../lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
-  const { body } = req;
-  const { url, key, password } = body;
+  if (!(await auth(req, res))) return;
 
-  if (password !== "test") {
-    res.status(401).json({ url, key });
+  const { body } = req;
+  const { url, key } = body;
+
+  if (!url || !key) {
+    res.status(400).json({ message: "Bad Request: provide a key and a url" });
+
     return;
   }
 
-  res.json({ url, key });
+  const link = await createLink({ url, key });
+
+  res.json(link);
 };
