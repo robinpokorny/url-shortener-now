@@ -3,6 +3,7 @@ import auth from "../lib/auth";
 import { createLink } from "../lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
+  console.log(req.body);
   if (!(await auth(req, res))) return;
 
   const { body } = req;

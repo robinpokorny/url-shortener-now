@@ -2,6 +2,7 @@ import { NowRequest, NowResponse } from "@now/node";
 import { getLink, incrementLinkCount } from "../lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
+  console.log(req.query);
   const { query } = req;
   const { key } = query;
 
