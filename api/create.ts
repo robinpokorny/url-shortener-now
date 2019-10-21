@@ -1,6 +1,6 @@
 import { NowRequest, NowResponse } from "@now/node";
-import auth from "../lib/auth";
-import { createLink } from "../lib/links";
+import auth from "./_lib/auth";
+import { createLink } from "./_lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
   console.log(req.body);

@@ -1,5 +1,5 @@
 import { NowRequest, NowResponse } from "@now/node";
-import { getLink, incrementLinkCount } from "../lib/links";
+import { getLink, incrementLinkCount } from "./_lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
   console.log(req.query);

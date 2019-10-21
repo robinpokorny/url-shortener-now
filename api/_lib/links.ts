@@ -1,5 +1,5 @@
 import { query } from "faunadb";
-import { client } from "../lib/db";
+import { client } from "./db";
 
 const { Collection, Create, Get, Match, Index, Update } = query;
 
