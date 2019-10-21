@@ -15,14 +15,11 @@ export default async (req: NowRequest, res: NowResponse) => {
   }
 
   try {
-    const { data, ref } = await getLink(key);
-
-    const { url, counter } = data;
+    const { url } = await getLink(key);
 
     res.writeHead(301, { Location: url });
-    res.end();
 
-    await incrementLinkCount(ref, counter);
+    await incrementLinkCount(key);
   } catch (error) {
     if (error.name === "NotFound") {
       res
@@ -36,5 +33,7 @@ export default async (req: NowRequest, res: NowResponse) => {
 
     res.status(500).json({ stack: error.stack, message: error.message });
     return;
+  } finally {
+    res.end();
   }
 };

@@ -1,9 +1,8 @@
 import { NowRequest, NowResponse } from "@now/node";
 import auth from "./_lib/auth";
-import { createLink } from "./_lib/links";
+import { addOrUpdateLink } from "./_lib/links";
 
 export default async (req: NowRequest, res: NowResponse) => {
-  console.log(req.body);
   if (!(await auth(req, res))) return;
 
   const { body } = req;
@@ -15,7 +14,7 @@ export default async (req: NowRequest, res: NowResponse) => {
     return;
   }
 
-  const link = await createLink({ url, key });
+  const link = await addOrUpdateLink(key, url);
 
   res.json(link);
 };

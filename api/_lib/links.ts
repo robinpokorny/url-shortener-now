@@ -1,9 +1,5 @@
-import { query } from "faunadb";
+import { query as q } from "faunadb";
 import { client } from "./db";
-
-const { Collection, Create, Get, Match, Index, Update } = query;
-
-type Ref = Object;
 
 export type Link = {
   counter: number;
@@ -12,28 +8,38 @@ export type Link = {
   url: string;
 };
 
-const getISODateTime = () => new Date().toISOString();
+const linkByKey = (key: string) => q.Match(q.Index("link_by_key"), key);
 
-type GetEmptyLink = () => Link;
-const getEmptyLink: GetEmptyLink = () => ({
-  counter: 0,
-  createdAt: getISODateTime(),
-  key: "",
-  url: ""
-});
-
-type GetLink = (key: string) => Promise<{ data: Link; ref: Ref }>;
+type GetLink = (key: string) => Promise<Link>;
 export const getLink: GetLink = key =>
-  client.query(Get(Match(Index("ref_by_key"), key))) as any;
+  client.query(q.Select("data", q.Get(linkByKey(key))));
 
-type IncrementLinkCount = (ref: Ref, counter: number) => Promise<void>;
-export const incrementLinkCount: IncrementLinkCount = (ref, counter) =>
-  client.query(Update(ref, { data: { counter: counter + 1 } }));
+type IncrementLinkCount = (key: string) => Promise<void>;
+export const incrementLinkCount: IncrementLinkCount = key =>
+  client.query(
+    q.Let(
+      { item: q.Get(linkByKey(key)) },
+      q.Update(q.Select("ref", q.Var("item")), {
+        data: {
+          counter: q.Add(1, q.Select(["data", "counter"], q.Var("item")))
+        }
+      })
+    )
+  );
 
-type CreateLink = (input: { key: string; url: string }) => Promise<Link>;
-export const createLink: CreateLink = async input => {
+type AddOrUpdateLink = (key: string, url: string) => Promise<Link>;
+export const addOrUpdateLink: AddOrUpdateLink = async (key, url) => {
   const { data } = await client.query(
-    Create(Collection("links"), { data: { ...getEmptyLink(), ...input } })
+    q.Let(
+      { item: linkByKey(key) },
+      q.If(
+        q.IsNonEmpty(q.Var("item")),
+        q.Update(q.Select("ref", q.Get(q.Var("item"))), { data: { url } }),
+        q.Create(q.Collection("links"), {
+          data: { key, url, counter: 0, createdAt: q.Time("now") }
+        })
+      )
+    )
   );
 
   return data;
