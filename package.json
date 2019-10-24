@@ -12,7 +12,7 @@
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
     "bcrypt": "^3.0.6",
-    "faunadb": "2.8.1"
+    "faunadb": "2.9.3"
   },
   "devDependencies": {
     "@now/node": "1.0.1",
