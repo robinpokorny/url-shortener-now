@@ -1,7 +1,8 @@
 {
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(?<key>[^/]+)", "dest": "/api/redirect.ts?key=$key" }
+    { "src": "/(?<key>[^/]+)", "dest": "/api/redirect.ts?key=$key" },
+    { "src": ".*", "dest": "https://robinpokorny.com" }
   ],
   "env": {
     "FAUNADB_SECRET_KEY": "@faunadb_secret_key",

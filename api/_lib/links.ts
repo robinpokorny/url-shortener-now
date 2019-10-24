@@ -36,7 +36,7 @@ export const addOrUpdateLink: AddOrUpdateLink = async (key, url) => {
         q.IsNonEmpty(q.Var("item")),
         q.Update(q.Select("ref", q.Get(q.Var("item"))), { data: { url } }),
         q.Create(q.Collection("links"), {
-          data: { key, url, counter: 0, createdAt: q.Time("now") }
+          data: { key, url, counter: 0, createdAt: q.ToString(q.Time("now")) }
         })
       )
     )
