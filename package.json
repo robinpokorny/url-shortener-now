@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.8",
     "faunadb": "2.9.1"
   },
   "devDependencies": {
